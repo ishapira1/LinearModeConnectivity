@@ -1,4 +1,6 @@
-
+# ishapira, April 2023
+#  This script contains utility functions for working with PyTorch neural networks,
+#  including interpolation, parameter extraction, distance calculation, and performance evaluation.
 import torch
 import numpy as np
 import torch.jit
@@ -19,6 +21,9 @@ def get_network_parameters(model):
         params.append(param.clone())  # .detach()?
     return params
 
+def compute_metrics_models(model1, model2, dataloader, sample_num, device):
+    criterion = nn.CrossEntropyLoss()
+    return compute_interpolated_metrics(model1, model2, sample_num, criterion, dataloader, device, verbose=True)
 
 def set_network_parameters(model, params):
     """
@@ -116,6 +121,38 @@ def compute_loss(network, criterion, dataloader, device):
 
 
 
+
+
+
+def compute_interpolated_metrics(model1, model2, sample_num, criterion, dataloader, device, verbose=True):
+    """
+    Compute the interpolated metrics (losses and accuracies) for interpolated models.
+
+    Args:
+        model1 (torch.nn.Module): The first trained model.
+        model2 (torch.nn.Module): The second trained model.
+        sample_num (int): The number of samples to interpolate between the two models.
+        criterion (nn.Module): The loss function to use for evaluating the models.
+        dataloader (DataLoader): The data loader to use for evaluating the models.
+        device (str or torch.device): The device to use for the computations.
+
+    Returns:
+        tuple: A tuple containing interpolated losses and accuracies, and alphas.
+    """
+
+
+    alphas = torch.linspace(0, 1, sample_num)
+    losses = []
+    accuracy_lst = []
+
+    for alpha in alphas:
+        interpolated_net = interpolate_networks(model1, model2, alpha.item(), device)
+        loss, accuracy = compute_loss_and_accuracy(interpolated_net, criterion, dataloader, device)
+        losses.append(loss)
+        accuracy_lst.append(accuracy)
+
+    return losses, accuracy_lst, alphas
+
 def compute_loss_and_accuracy(network, criterion, dataloader, device):
     if not is_network_on_device(network, device): network.to(device)
     network.eval()
@@ -137,61 +174,6 @@ def compute_loss_and_accuracy(network, criterion, dataloader, device):
             total_samples += inputs.size(0)
 
     return total_loss / total_samples, total_accuracy / total_samples
-
-
-def compute_interpolated_metrics(model1, model2, sample_num, criterion, dataloader, device, verbose=True):
-    """
-    Compute the interpolated metrics (losses and accuracies) for interpolated models.
-
-    Args:
-        model1 (torch.nn.Module): The first trained model.
-        model2 (torch.nn.Module): The second trained model.
-        sample_num (int): The number of samples to interpolate between the two models.
-        criterion (nn.Module): The loss function to use for evaluating the models.
-        dataloader (DataLoader): The data loader to use for evaluating the models.
-        device (str or torch.device): The device to use for the computations.
-
-    Returns:
-        tuple: A tuple containing interpolated losses and accuracies, and alphas.
-    """
-    if verbose: print(f"""
-    compute_interpolated_metrics: Model1 device = {model1.device} Model2 device = {model1.device}, device={device}
-    """)
-
-    alphas = torch.linspace(0, 1, sample_num)
-    losses = []
-    accuracy_lst = []
-
-
-    for alpha in alphas:
-        interpolated_net = interpolate_networks(model1, model2, alpha.item(), device)
-        loss, accuracy = compute_loss_and_accuracy(interpolated_net, criterion, dataloader, device)
-        print(f"compute_interpolated_metrics: alpha={alpha}, loss={loss}, accuracy={accuracy}")
-        losses.append(loss)
-        accuracy_lst.append(accuracy)
-
-    return losses, accuracy_lst, alphas
-
-
-def compute_interpolated_losses(net1, net2, sample_num, criterion, dataloader, device):
-    alphas = torch.linspace(0, 1, sample_num)
-    losses = []
-    losses_relative = []
-
-    net1.to(device)
-    net2.to(device)
-    net1_loss = compute_loss(net1, criterion, dataloader, device)
-    net2_loss = compute_loss(net2, criterion, dataloader, device)
-
-    for alpha in alphas:
-        interpolated_net = interpolate_networks(net1, net2, alpha.item(), device)
-        loss = compute_loss(interpolated_net, criterion, dataloader, device)
-        losses.append(loss)
-        interpolated_loss = alpha * net1_loss + (1 - alpha) * net2_loss
-        losses_relative.append((loss - interpolated_loss) / interpolated_loss)
-
-    return losses, losses_relative, alphas
-
 
 
 
@@ -248,76 +230,3 @@ def get_model_predictions(model, dataloader, device):
 
     return np.array(predictions)
 
-
-def mse_difference_between_models_weights(model1, model2, dataloader, device):
-    """
-    Calculate the Mean Squared Error (MSE) difference between the predictions of two models.
-
-    Args:
-        model1 (nn.Module): The first model.
-        model2 (nn.Module): The second model.
-        dataloader (DataLoader): The dataloader with input data.
-        device (str): The device to run the models on, e.g. 'cpu' or 'cuda'.
-
-    Returns:
-        float: The MSE difference between the models' predictions.
-    """
-    preds1 = get_model_predictions(model1, dataloader, device)
-    preds2 = get_model_predictions(model2, dataloader, device)
-
-    mse_diff = np.mean((preds1 - preds2) ** 2)
-    return mse_diff
-
-
-def mse_difference_between_models(model1, model2, dataloader, device):
-    """
-    Calculate the Mean Squared Error (MSE) difference between the predictions of two models.
-    
-    Args:
-        model1 (nn.Module): The first model.
-        model2 (nn.Module): The second model.
-        dataloader (DataLoader): The dataloader with input data.
-        device (str): The device to run the models on, e.g. 'cpu' or 'cuda'.
-        
-    Returns:
-        float: The MSE difference between the models' predictions.
-    """
-    preds1 = get_model_predictions(model1, dataloader, device)
-    preds2 = get_model_predictions(model2, dataloader, device)
-    
-    mse_diff = np.mean((preds1 - preds2) ** 2)
-    return mse_diff
-
-
-def compute_interpolated_differences(model1, model2, sample_num, dataloader, device):
-    """
-    Compute the MSE difference between the interpolated network and the predictions obtained
-    by doing an interpolation between the predictions of each network.
-    
-    Args:
-        model1 (nn.Module): The first model.
-        model2 (nn.Module): The second model.
-        sample_num (int): The number of samples for the interpolation.
-        dataloader (DataLoader): The dataloader with input data.
-        device (str): The device to run the models on, e.g. 'cpu' or 'cuda'.
-        
-    Returns:
-        list: The MSE differences for each alpha value.
-        list: The list of alpha values used for interpolation.
-    """
-    mse_differences = []
-    alphas = np.linspace(0, 1, sample_num)
-    model1_preds = get_model_predictions(model1, dataloader, device)
-    model2_preds = get_model_predictions(model2, dataloader, device)
-    
-    for alpha in alphas:
-        interpolated_model = interpolate_networks(model1, model2, alpha, device)
-        interpolated_preds = get_model_predictions(interpolated_model, dataloader, device)
-        
-        
-        interp_preds_from_models = alpha * model1_preds + (1 - alpha) * model2_preds
-        mse_diff = np.mean((interpolated_preds - interp_preds_from_models) ** 2)
-        
-        mse_differences.append(mse_diff)
-    
-    return mse_differences, alphas
