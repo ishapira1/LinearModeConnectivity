@@ -1,5 +1,5 @@
 # Linear Mode Connectivity in Deep Learning
-itai shaapira, May 1st, 2023
+itai shapira, May 1st, 2023
 
 This repository contains the code, data, and results for the study of linear mode connectivity in deep learning. We perform empirical analysis on standard networks for MNIST, CIFAR-10, ImageNet, and Tiny ImageNet. We explore the relationship between training dynamics and linear mode connectivity properties of the models, providing insights for more efficient training algorithms and optimization strategies.
 
