@@ -36,6 +36,11 @@ def load_mnist_dataset():
 
 
 class LeNet5(nn.Module):
+    """
+    LeNet-5 architecture (LeCun et al. [1998]). The network consists of a total of 7
+    layers, including 2 convolutional layers, followed by 2 average pooling layers, and 3 fully connected
+    layers.
+    """
     def __init__(self, num_classes=10):
         super(LeNet5, self).__init__()
         self.conv1 = nn.Conv2d(1, 6, kernel_size=5, padding=2)

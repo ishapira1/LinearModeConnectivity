@@ -97,6 +97,13 @@ class ResNet(nn.Module):
 
 
 class AlexNet(nn.Module):
+    """
+    We used the AlexNet architecture (Krizhevsky et al. [2017])
+    for TinyImageNet. Comprised of eight layers in total, AlexNet features five convolutional layers
+    followed by three fully connected layers, with the final layer outputting class labels. The first two
+    convolutional layers include batch normalization, while dropout is employed after each of the last
+    two fully connected layers.
+    """
     def __init__(self, num_classes=1000):
         super(AlexNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2)
