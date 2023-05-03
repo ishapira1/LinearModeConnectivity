@@ -1,4 +1,4 @@
-# Linear Mode Connectivity in Deep Learning
+# Linear Mode Connectivity 
 itai shapira, May 1st, 2023
 
 Harvard, CS229br Foundations of Deep Learning (aka Topics in the Foundations of Machine Learning)
