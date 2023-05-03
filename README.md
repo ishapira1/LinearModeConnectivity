@@ -30,7 +30,7 @@ The results of the experiments can be found in the `processed/` directory in a r
 ## Linear Mode Connectivity Experiment
 The run_experiment.py file contains an implementation of the linear mode connectivity experiment. The experiment is designed to explore the connectivity between pretrained models and models that continue training from a pretrained model in the context of neural networks.
 
-### On the Efficiency of the algorithm
+### On the Efficiency of the training method
 In this implementation of the linear mode connectivity experiment, we adopt an efficient approach to reduce computational resources.
 Instead of training two separate models for each (k1, k2) combination, we train a single model for the maximum number of epochs and then reload the model for different values of k1. 
 For each k1 value, we continue training only one new model for an additional k2 steps and compare its performance with the original "main-branch" model at the k1+k2 position. 
