@@ -4,7 +4,9 @@ itai shapira, May 1st, 2023
 Harvard, CS229br Foundations of Deep Learning (aka Topics in the Foundations of Machine Learning)
 
 
-This repository contains the code, data, and results for the study of linear mode connectivity in deep learning. We perform empirical analysis on standard networks for MNIST, CIFAR-10, ImageNet, and Tiny ImageNet. We explore the relationship between training dynamics and linear mode connectivity properties of the models, providing insights for more efficient training algorithms and optimization strategies.
+This repository is dedicated to the in-depth experiment of linear mode connectivity.
+Here, you'll find the code, data, and outcomes of our analysis of LMC on widely-used network architectures, such as those for MNIST, CIFAR-10, ImageNet, and Tiny ImageNet.
+Please find the full paper in this repository
 
 ## Directory Structure
 
