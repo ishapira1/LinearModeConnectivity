@@ -10,9 +10,6 @@ import torchvision.models as models
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-
-
-
 def load_imagenet_model():
     #  load a ResNet-50 model that has already been trained on the ImageNet dataset
     # pre-trained ResNet-50 model provided by PyTorch

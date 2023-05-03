@@ -39,7 +39,6 @@ class SimpleCIFAR10CNN(nn.Module):
     """
     we use a reduced version of the VGG-16 architecture (Simonyan and
     Zisserman [2014]). The modified model consists of four layers in total, with two convolutional
-    3
     layers followed by two fully connected layers. Max-pooling is performed after each convolutional
     layer, and dropout is applied after each of the fully connected layers. This reduced VGG model has
     855,000 parameters, making it less computationally intensive while maintaining the basic structure

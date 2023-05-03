@@ -80,6 +80,7 @@ def is_network_on_device(network, device):
         network (torch.nn.Module): The input neural network.
         device (str or torch.device): The target device.
 
+
     Returns:
         bool: True if the network is on the given device, False otherwise.
     """
@@ -209,7 +210,8 @@ def l2_distance_weight_space(params1, params2):
 def get_model_predictions(model, dataloader, device):
     """
     Get predictions from a model given a dataloader.
-    
+
+
     Args:
         model (nn.Module): The model to make predictions with.
         dataloader (DataLoader): The dataloader with input data.
