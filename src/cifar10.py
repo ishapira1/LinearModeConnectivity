@@ -37,7 +37,7 @@ import torch.nn as nn
 # ReducedVGG
 class SimpleCIFAR10CNN(nn.Module):
     def __init__(self, num_classes=10):
-        super(ReducedVGG, self).__init__()
+        super(SimpleCIFAR10CNN, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
